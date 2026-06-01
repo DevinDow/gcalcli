@@ -768,15 +768,20 @@ class GoogleCalendarInterface:
                 if handler.__name__ == 'Time':
                     all_day = is_all_day(event)
                     if all_day:
-                        start_date = event['s'].strftime('%Y-%m-%d')
+                        start_date = event['s'].strftime('%Y/%m/%d')
                         end_dt = event['e'] - timedelta(days=1)
-                        end_date = end_dt.strftime('%Y-%m-%d')
-                        row.extend([start_date, end_date])
+                        end_date = end_dt.strftime('%Y/%m/%d')
+                        if (start_date == end_date):
+                            date_range = start_date
+                        else:
+                            date_range = f"{start_date}-{end_date}"
+                        row.extend([date_range])
                     else:
                         date_str = event['s'].strftime('%Y-%m-%d')
                         start_time = event['s'].strftime('%H:%M')
                         end_time = event['e'].strftime('%H:%M')
-                        row.extend([date_str, start_time, end_time])
+                        time_range = f"{start_time}-{end_time}"
+                        row.extend([date_str, time_range])
                 else:
                     row.extend(handler.get(event))
 
