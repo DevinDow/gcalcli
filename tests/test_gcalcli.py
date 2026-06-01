@@ -393,3 +393,37 @@ def test_next_cut(PatchedGCalI):
 
     event_title = "樹貞 fun fun fun"
     assert gcal._next_cut(event_title) == (8, 6)
+
+
+def test_tsv2(capsys, PatchedGCalI):
+    # Test tsv2 format
+    opts = vars(get_output_parser().parse_args([]))
+    opts.update(vars(get_color_parser().parse_args([])))
+    opts.update({'tsv2': True})
+    gcal = PatchedGCalI(**opts)
+
+    from datetime import datetime
+    events = [
+        {
+            's': datetime(2026, 6, 1, 9, 0),
+            'e': datetime(2026, 6, 1, 10, 0),
+            'summary': 'Timed Event',
+            'gcalcli_cal': {'summary': 'Calendar 1', 'id': 'cal1'},
+            'id': '123'
+        },
+        {
+            's': datetime(2026, 6, 2, 0, 0),
+            'e': datetime(2026, 6, 3, 0, 0),
+            'summary': 'All Day Event',
+            'gcalcli_cal': {'summary': 'Calendar 1', 'id': 'cal1'},
+            'id': '456'
+        }
+    ]
+
+    gcal._tsv2(gcal.now, events)
+    captured = capsys.readouterr()
+
+    lines = captured.out.strip().split('\n')
+    assert len(lines) == 2
+    assert lines[0].startswith('2026-06-01\t09:00\t10:00\tTimed Event')
+    assert lines[1].startswith('2026-06-02\t2026-06-02\tAll Day Event')

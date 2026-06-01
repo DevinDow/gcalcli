@@ -192,6 +192,13 @@ def get_output_parser(parents=[]):
         help='Use Tab Separated Value output',
     )
     output_parser.add_argument(
+        '--tsv2',
+        action='store_true',
+        dest='tsv2',
+        default=False,
+        help='Use Custom Tab Separated Value output (no headers, custom time format)',
+    )
+    output_parser.add_argument(
         '--json',
         action='store_true',
         dest='json',

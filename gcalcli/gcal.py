@@ -749,6 +749,40 @@ class GoogleCalendarInterface:
             output = ('\t'.join(row)).replace('\n', r'\n')
             print(output)
 
+    def _tsv2(self, start_datetime, event_list):
+        keys = set(self.details.keys())
+        keys.update(DETAILS_DEFAULT)
+
+        handlers = [handler
+                    for key, handler in HANDLERS.items()
+                    if key in keys]
+
+        for event in event_list:
+            if self.options.get('ignore_started') and (event['s'] < self.now):
+                continue
+            if self.options.get('ignore_declined') and self._DeclinedEvent(event):
+                continue
+
+            row = []
+            for handler in handlers:
+                if handler.__name__ == 'Time':
+                    all_day = is_all_day(event)
+                    if all_day:
+                        start_date = event['s'].strftime('%Y-%m-%d')
+                        end_dt = event['e'] - timedelta(days=1)
+                        end_date = end_dt.strftime('%Y-%m-%d')
+                        row.extend([start_date, end_date])
+                    else:
+                        date_str = event['s'].strftime('%Y-%m-%d')
+                        start_time = event['s'].strftime('%H:%M')
+                        end_time = event['e'].strftime('%H:%M')
+                        row.extend([date_str, start_time, end_time])
+                else:
+                    row.extend(handler.get(event))
+
+            output = ('\t'.join(row)).replace('\n', r'\n')
+            print(output)
+
     def _json(self, start_datetime, event_list):
         keys = set(self.details.keys())
         keys.update(DETAILS_DEFAULT)
@@ -1289,6 +1323,8 @@ class GoogleCalendarInterface:
 
         if self.options.get('tsv'):
             return self._tsv(start, event_list)
+        elif self.options.get('tsv2'):
+            return self._tsv2(start, event_list)
         elif self.options.get('json'):
             return self._json(start, event_list)
         else:
