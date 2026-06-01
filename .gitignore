@@ -16,3 +16,4 @@ gcalcli.egg-info
 
 .python-version
 *.pyc
+.vs/
