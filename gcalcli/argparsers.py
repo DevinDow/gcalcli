@@ -203,7 +203,14 @@ def get_output_parser(parents=[]):
         action='store_true',
         dest='md',
         default=False,
-        help='Use Custom Text output (Day/Date, 12hr time, no color, Calendars)',
+        help='Use Custom Text output (Day/Date, 12hr time, no color, Calendar, Attendees, Description)',
+    )
+    output_parser.add_argument(
+        '--html',
+        action='store_true',
+        dest='html',
+        default=False,
+        help='Use Custom Text output (Day/Date, 12hr time, no color, Calendar, Attendees, Description)',
     )
     output_parser.add_argument(
         '--json',
