@@ -1047,7 +1047,7 @@ class GoogleCalendarInterface:
                 title_calendar += '  _w/ ' + attendees.replace('@gmail.com', '') + '_'
 
         if all_day:
-            print('• ------- - -------  %s' % (title_calendar))
+            print('• XXXXXXX - XXXXXXX  %s' % (title_calendar))
         else:
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
@@ -1082,7 +1082,7 @@ class GoogleCalendarInterface:
                 title_calendar += '  <i>w/ ' + attendees.replace('@gmail.com', '') + '</i>'
 
         if all_day:
-            print('• ------- - -------  %s' % (title_calendar))
+            print('• XXXXXXX - XXXXXXX  %s' % (title_calendar))
         else:
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
@@ -1333,7 +1333,7 @@ class GoogleCalendarInterface:
         return selected
 
     def _iterate_events_html(self, start_datetime, event_list, year_date=False):
-        print("<b><u>🗓️ Devin's Agenda</u></b>")
+        print("<b><u>🗓️ Devin's Agenda</u></b>\n")
 
         selected = 0
 
