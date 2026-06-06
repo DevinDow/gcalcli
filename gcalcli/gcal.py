@@ -1027,10 +1027,7 @@ class GoogleCalendarInterface:
 
     def _PrintEvent_simple(self, event):
 
-        indent = 3 * ' '
-        details_indent = 26 * ' '
-
-        self.printer.msg(indent)
+        details_indent = 24 * ' '
 
         happening_now = event['s'] <= self.now <= event['e']
         all_day = is_all_day(event)
@@ -1041,24 +1038,24 @@ class GoogleCalendarInterface:
             title_calendar += '  _' + calendar + '_'
 
         if all_day:
-            self.printer.msg('------- - -------  %s\n' % (title_calendar))
+            print('• ------- - -------  %s' % (title_calendar))
         else:
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
-            self.printer.msg('%7s - %-7s  %s\n' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
+            print('• %7s - %-7s  %s' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
 
         #if self.details.get('location') \ # --details location
         #        and 'location' in event \
         #        and event['location'].strip():
         if 'location' in event and event['location'].strip():
-            xstr = '%s_%s_\n' % (details_indent,event['location'].strip()[:40])
-            self.printer.msg(xstr, 'default')
+            xstr = '%s_%s_' % (details_indent, event['location'].strip()[:40])
+            print(xstr)
 
         """
         #if self.details.get('attendees') and 'attendees' in event: # --details attendees
         if 'attendees' in event:
             xstr = '%s  :\n' % (details_indent)
-            self.printer.msg(xstr, 'default')
+            print(xstr)
 
             if 'self' not in event['organizer']:
                 xstr = '%s    %s: <%s>\n' % (
@@ -1067,7 +1064,7 @@ class GoogleCalendarInterface:
                                       .strip(),
                     event['organizer'].get('email', 'Not Provided').strip()
                 )
-                self.printer.msg(xstr, 'default')
+                print(xstr)
 
             for attendee in event['attendees']:
                 if 'self' not in attendee:
@@ -1076,11 +1073,11 @@ class GoogleCalendarInterface:
                         attendee.get('displayName', 'Not Provided').strip(),
                         attendee.get('email', 'Not Provided').strip()
                     )
-                    self.printer.msg(xstr, 'default')
+                    print(xstr)
         """
 
         if 'description' in event and event['description'].strip():
-            self.printer.msg(details_indent + event['description'].strip()[:40].replace('\n', '~') + '\n')
+            print(details_indent + event['description'].strip()[:40].replace('\n', '~'))
 
     def delete(self, cal_id, event_id):
         self._retry_with_backoff(
@@ -1310,9 +1307,9 @@ class GoogleCalendarInterface:
             tmp_day_str = event['s'].strftime(day_format)
             if year_date or tmp_day_str != day:
                 if (day != ''):
-                    self.printer.msg('\n')  # extra newline between days
+                    print('\n')  # extra newline between days
                 day = tmp_day_str
-                self.printer.msg('***' + day.upper() + '***\n')
+                print('*' + day.upper() + '*')
 
             # print EVENT
             self._PrintEvent_simple(event)
