@@ -1036,6 +1036,15 @@ class GoogleCalendarInterface:
         title_calendar = title
         if calendar != 'devindow@gmail.com':
             title_calendar += '  _' + calendar + '_'
+        attendees = ''
+        if 'attendees' in event:
+            if (self not in event['organizer']):
+                organizer = event['organizer'].get('email', '').strip()
+                if (organizer != 'devindow@gmail.com'):
+                    attendees += organizer + ', '
+            attendees += ', '.join([a.get('email', '').strip() for a in event['attendees'] if 'self' not in a])
+            if attendees:
+                title_calendar += '  _w/ ' + attendees.replace('@gmail.com', '') + '_'
 
         if all_day:
             print('• ------- - -------  %s' % (title_calendar))
@@ -1050,31 +1059,6 @@ class GoogleCalendarInterface:
         if 'location' in event and event['location'].strip():
             xstr = '%s_%s_' % (details_indent, event['location'].strip()[:40])
             print(xstr)
-
-        """
-        #if self.details.get('attendees') and 'attendees' in event: # --details attendees
-        if 'attendees' in event:
-            xstr = '%s  :\n' % (details_indent)
-            print(xstr)
-
-            if 'self' not in event['organizer']:
-                xstr = '%s    %s: <%s>\n' % (
-                    details_indent,
-                    event['organizer'].get('displayName', 'Not Provided')
-                                      .strip(),
-                    event['organizer'].get('email', 'Not Provided').strip()
-                )
-                print(xstr)
-
-            for attendee in event['attendees']:
-                if 'self' not in attendee:
-                    xstr = '%s    %s: <%s>\n' % (
-                        details_indent,
-                        attendee.get('displayName', 'Not Provided').strip(),
-                        attendee.get('email', 'Not Provided').strip()
-                    )
-                    print(xstr)
-        """
 
         if 'description' in event and event['description'].strip():
             print(details_indent + event['description'].strip()[:40].replace('\n', '~'))
@@ -1307,7 +1291,7 @@ class GoogleCalendarInterface:
             tmp_day_str = event['s'].strftime(day_format)
             if year_date or tmp_day_str != day:
                 if (day != ''):
-                    print('\n')  # extra newline between days
+                    print()  # extra newline between days
                 day = tmp_day_str
                 print('*' + day.upper() + '*')
 
