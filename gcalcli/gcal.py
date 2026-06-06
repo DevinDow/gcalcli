@@ -1027,7 +1027,7 @@ class GoogleCalendarInterface:
 
     def _PrintEvent_md(self, event):
 
-        details_indent = 24 * ' '
+        details_indent = 6 * ' '
 
         happening_now = event['s'] <= self.now <= event['e']
         all_day = is_all_day(event)
@@ -1046,12 +1046,19 @@ class GoogleCalendarInterface:
             if attendees:
                 title_calendar += '  _w/ ' + attendees.replace('@gmail.com', '') + '_'
 
+        print('• ' + title_calendar)
+        if (not all_day):
+            tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
+            tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
+            print('%s %s - %s' % (details_indent, tmp_start_time_str, tmp_end_time_str))
+        """
         if all_day:
             print('• XXXXXXX - XXXXXXX  %s' % (title_calendar))
         else:
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
             print('• %7s - %-7s  %s' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
+        """
 
         if 'location' in event and event['location'].strip():
             xstr = '%s_%s_' % (details_indent, event['location'].strip()[:40])
@@ -1062,7 +1069,7 @@ class GoogleCalendarInterface:
 
     def _PrintEvent_html(self, event):
 
-        details_indent = 24 * ' '
+        details_indent = 6 * ' '
 
         happening_now = event['s'] <= self.now <= event['e']
         all_day = is_all_day(event)
@@ -1081,12 +1088,19 @@ class GoogleCalendarInterface:
             if attendees:
                 title_calendar += '  <i>w/ ' + attendees.replace('@gmail.com', '') + '</i>'
 
+        print('• ' + title_calendar)
+        if (not all_day):
+            tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
+            tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
+            print('%s %s - %s' % (details_indent, tmp_start_time_str, tmp_end_time_str))
+        """
         if all_day:
             print('• XXXXXXX - XXXXXXX  %s' % (title_calendar))
         else:
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
             print('• %7s - %-7s  %s' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
+        """
 
         if 'location' in event and event['location'].strip():
             xstr = '%s<i>%s</i>' % (details_indent, event['location'].strip()[:40])
