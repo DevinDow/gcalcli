@@ -1025,6 +1025,63 @@ class GoogleCalendarInterface:
                 )
             self.printer.msg(xstr, 'default')
 
+    def _PrintEvent_simple(self, event):
+
+        indent = 3 * ' '
+        details_indent = 26 * ' '
+
+        self.printer.msg(indent)
+
+        happening_now = event['s'] <= self.now <= event['e']
+        all_day = is_all_day(event)
+        calendar = event['gcalcli_cal']['summary']
+        title = '*' + _valid_title(event).strip() + '*'
+        title_calendar = title
+        if calendar != 'devindow@gmail.com':
+            title_calendar += '  _' + calendar + '_'
+
+        if all_day:
+            self.printer.msg('------- - -------  %s\n' % (title_calendar))
+        else:
+            tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
+            tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
+            self.printer.msg('%7s - %-7s  %s\n' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
+
+        #if self.details.get('location') \ # --details location
+        #        and 'location' in event \
+        #        and event['location'].strip():
+        if 'location' in event and event['location'].strip():
+            xstr = '%s_%s_\n' % (details_indent,event['location'].strip()[:40])
+            self.printer.msg(xstr, 'default')
+
+        """
+        #if self.details.get('attendees') and 'attendees' in event: # --details attendees
+        if 'attendees' in event:
+            xstr = '%s  :\n' % (details_indent)
+            self.printer.msg(xstr, 'default')
+
+            if 'self' not in event['organizer']:
+                xstr = '%s    %s: <%s>\n' % (
+                    details_indent,
+                    event['organizer'].get('displayName', 'Not Provided')
+                                      .strip(),
+                    event['organizer'].get('email', 'Not Provided').strip()
+                )
+                self.printer.msg(xstr, 'default')
+
+            for attendee in event['attendees']:
+                if 'self' not in attendee:
+                    xstr = '%s    %s: <%s>\n' % (
+                        details_indent,
+                        attendee.get('displayName', 'Not Provided').strip(),
+                        attendee.get('email', 'Not Provided').strip()
+                    )
+                    self.printer.msg(xstr, 'default')
+        """
+
+        if 'description' in event and event['description'].strip():
+            self.printer.msg(details_indent + event['description'].strip()[:40].replace('\n', '~') + '\n')
+
     def delete(self, cal_id, event_id):
         self._retry_with_backoff(
             self.get_events()
@@ -1230,6 +1287,38 @@ class GoogleCalendarInterface:
 
         return selected
 
+    def _iterate_events_md(self, start_datetime, event_list, year_date=False):
+        selected = 0
+
+        if len(event_list) == 0:
+            self.printer.msg('\nNo Events Found...\n')
+            return selected
+
+        # 10 chars for day and length must match 'indent' in _PrintEvent
+        day_format = '%Y-%m-%d' if year_date else '%a %b %d'
+        day = ''
+
+        for event in event_list:
+            if self.options['ignore_started'] and (event['s'] < self.now):
+                continue
+            if self._DeclinedEvent(event):  # self.options['ignore_declined'] and 
+                continue
+
+            selected += 1
+
+            # print DAY only once
+            tmp_day_str = event['s'].strftime(day_format)
+            if year_date or tmp_day_str != day:
+                if (day != ''):
+                    self.printer.msg('\n')  # extra newline between days
+                day = tmp_day_str
+                self.printer.msg('***' + day.upper() + '***\n')
+
+            # print EVENT
+            self._PrintEvent_simple(event)
+
+        return selected
+
     def _GetAllEvents(self, cal, start, end, search_text) -> Iterable[Event]:
         pageToken = None
         while True:
@@ -1330,6 +1419,8 @@ class GoogleCalendarInterface:
             return self._tsv(start, event_list)
         elif self.options.get('tsv2'):
             return self._tsv2(start, event_list)
+        elif self.options.get('md'):
+            return self._iterate_events_md(start, event_list, year_date=year_date)
         elif self.options.get('json'):
             return self._json(start, event_list)
         else:

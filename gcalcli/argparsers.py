@@ -199,6 +199,13 @@ def get_output_parser(parents=[]):
         help='Use Custom Tab Separated Value output (no headers, custom time format)',
     )
     output_parser.add_argument(
+        '--md',
+        action='store_true',
+        dest='md',
+        default=False,
+        help='Use Custom Text output (Day/Date, 12hr time, no color, Calendars)',
+    )
+    output_parser.add_argument(
         '--json',
         action='store_true',
         dest='json',
