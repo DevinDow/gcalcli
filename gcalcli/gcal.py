@@ -1027,12 +1027,12 @@ class GoogleCalendarInterface:
 
     def _PrintEvent_md(self, event):
 
-        details_indent = 6 * ' '
+        details_indent = 4 * ' ' + '* '
 
         happening_now = event['s'] <= self.now <= event['e']
         all_day = is_all_day(event)
         calendar = event['gcalcli_cal']['summary']
-        title = '*' + _valid_title(event).strip() + '*'
+        title = '**' + _valid_title(event).strip() + '**'
         title_calendar = title
         if calendar != 'devindow@gmail.com':
             title_calendar += '  _' + calendar + '_'
@@ -1046,23 +1046,15 @@ class GoogleCalendarInterface:
             if attendees:
                 title_calendar += '  _w/ ' + attendees.replace('@gmail.com', '') + '_'
 
-        print('• ' + title_calendar)
+        print('* ' + title_calendar)
         if (not all_day):
             tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
             tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
             print('%s %s - %s' % (details_indent, tmp_start_time_str, tmp_end_time_str))
-        """
-        if all_day:
-            print('• XXXXXXX - XXXXXXX  %s' % (title_calendar))
-        else:
-            tmp_start_time_str = utils.agenda_time_fmt(event['s'], False)
-            tmp_end_time_str = utils.agenda_time_fmt(event['e'], False)
-            print('• %7s - %-7s  %s' % (tmp_start_time_str, tmp_end_time_str, title_calendar))
-        """
 
         if 'location' in event and event['location'].strip():
             xstr = '%s_%s_' % (details_indent, event['location'].strip()[:40])
-            print(xstr)
+            print(xstr + '  ')
 
         if 'description' in event and event['description'].strip():
             print(details_indent + event['description'].strip()[:40].replace('\n', '~'))
@@ -1315,7 +1307,7 @@ class GoogleCalendarInterface:
         return selected
 
     def _iterate_events_md(self, start_datetime, event_list, year_date=False):
-        print("*🗓️ Devin's Agenda*\n")
+        print("# 🗓️ Devin's Agenda\n")
         selected = 0
 
         if len(event_list) == 0:
@@ -1339,7 +1331,7 @@ class GoogleCalendarInterface:
                 if (day != ''):
                     print()  # extra newline between days
                 day = tmp_day_str
-                print('*' + day.upper() + '*')
+                print('## ' + day.upper())
 
             # print EVENT
             self._PrintEvent_md(event)
