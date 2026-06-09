@@ -1364,7 +1364,7 @@ class GoogleCalendarInterface:
                 if (day != ''):
                     print()  # extra newline between days
                 day = tmp_day_str
-                print('<b>' + day.upper() + '</b>')
+                print('<b>📆 ' + day.upper() + '</b>')
 
             # print EVENT
             self._PrintEvent_html(event)
